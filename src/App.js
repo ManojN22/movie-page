@@ -1,25 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import './App.css'; // External CSS for styling
+import LoaderTemplate from './Loader';
 
-function App() {
+const MovieList = () => {
+  const [movies, setMovies] = useState([]);
+  useEffect(() => {
+    fetch('https://www.omdbapi.com/?s=starwars&apikey=263d22d8')
+      .then(response => response.json())
+      .then(data => {
+        if (data.Response === "True") {
+          setMovies(data.Search);
+        }
+      })
+      .catch(error => console.log(error));
+  }, []);
+
+  // backgroundImage: movie.Poster !== "N/A" ? movie.Poster : "public/logo512.png"
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
+    <div class="main-container">
+
+   {movies.length===0?<LoaderTemplate/>:
+    <div className="movie-container">
+      {movies.map((movie) => (
+        <a tabindex="0" style={{backgroundImage: movie.Poster !== "N/A" ? `url(${movie.Poster})` : "url(https://i.ytimg.com/vi/PIk1mc3u1tI/maxresdefault.jpg)"}} key={movie.imdbID}  className='movie-card'>
+          <div className="movie-info">
+            <h3>{movie.Title}</h3>
+            <div>Type: {movie.Type}</div>
+            <p>Year: {movie.Year}</p>
+          </div>
         </a>
-      </header>
+      ))}
+    </div>}
     </div>
   );
-}
+};
 
-export default App;
+export default MovieList;
